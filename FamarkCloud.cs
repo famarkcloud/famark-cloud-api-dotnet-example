@@ -27,6 +27,7 @@ public class FamarkCloud
 
         if (!string.IsNullOrEmpty(sessionId))
         {
+            _client.DefaultRequestHeaders.Clear();
             _client.DefaultRequestHeaders.Add("SessionId", sessionId);
         }
 

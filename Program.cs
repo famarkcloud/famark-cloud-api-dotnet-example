@@ -1,42 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
 internal class Program
 {
-    [DataContract]
-    public class Credential
-    {
-        [DataMember]
-        public string DomainName { get; set; }
-        [DataMember]
-        public string UserName { get; set; }
-        [DataMember]
-        public string Password { get; set; }
-    }
-
-    [DataContract]
-    public class Business_Contact
-    {
-        [DataMember]
-        public string FirstName { get; set; }
-
-        [DataMember]
-        public string LastName { get; set; }
-
-        [DataMember]
-        public string Phone { get; set; }
-
-        [DataMember]
-        public string Email { get; set; }
-
-        [DataMember]
-        public string Business_ContactId { get; set; }
-    }
-
     private static async Task Main(string[] args)
     {
         Console.Write("Enter Domain Name: ");
@@ -97,6 +66,26 @@ internal class Program
             }
 
             ans = Console.ReadKey();
+        }
+
+        RetrieveMultipleQuery query = new RetrieveMultipleQuery
+        {
+            Columns = "FirstName,LastName,Phone,Email,Business_ContactId",
+            OrderBy = "FirstName"
+        };
+
+        string queryData = SerializeToJson(query);
+        responseData = await api.PostData("Business_Contact/RetrieveMultipleRecords", queryData, sessionId);
+
+        if (responseData != null)
+        {
+            Business_Contact[] contacts = DeserializeFromJson<Business_Contact[]>(responseData);
+            int i = 0;
+            Console.WriteLine();
+            foreach (Business_Contact contact in contacts)
+            {
+                Console.WriteLine("{0}| {1} | {2} | {3} | {4} | {5}", (++i).ToString("000"), contact.FirstName, contact.LastName, contact.Phone, contact.Email, contact.Business_ContactId);
+            }
         }
     }
 
